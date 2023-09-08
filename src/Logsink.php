@@ -25,8 +25,8 @@ class Logsink {
     
     public function newLog($body) {
         $task = [
-            ':service' => $body['service'],
             ':hostname' => $body['hostname'],
+            ':service' => $body['service'],
             ':instance' => $body['instance'],
             ':time' => $body['time'],
             ':level' => $body['level'],
@@ -34,17 +34,17 @@ class Logsink {
         ];
         
         $sql = 'INSERT INTO logs(
-                    service,
-                    hostname,
-                    instance,
                     time,
+                    hostname,
+                    service,
+                    instance,
                     level,
                     msg
                 ) VALUES (
-                    :service,
-                    :hostname,
-                    :instance,
                     TO_TIMESTAMP(:time),
+                    :hostname,
+                    :service,
+                    :instance,
                     :level,
                     :msg
                 )';
