@@ -18,8 +18,7 @@ class Logsink {
             'log',
             function($body) use($th) {
                 return $th -> newLog($body);
-            },
-            'log'
+            }
         );
     }
     
