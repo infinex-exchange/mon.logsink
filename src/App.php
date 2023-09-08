@@ -12,7 +12,7 @@ class App extends Infinex\App\Daemon {
         $this -> pdo = new Infinex\Database\PDO($this -> loop, $this -> log);
         $this -> pdo -> start();
         
-        $this -> auth = new Logsink($this -> log, $this -> pdo);
+        $this -> logsink = new Logsink($this -> log, $this -> pdo);
         
         $th = $this;
         $this -> amqp -> on('connect', function() use($th) {
