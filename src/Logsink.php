@@ -2,22 +2,46 @@
 
 class Logsink {
     private $log;
+    private $amqp;
     private $pdo;
     
-    function __construct($log, $pdo) {
+    function __construct($log, $amqp, $pdo) {
         $this -> log = $log;
+        $this -> amqp = $amqp;
         $this -> pdo = $pdo;
         
         $this -> log -> debug('Initialized log sink');
     }
     
-    public function bind($amqp) {
+    public function start() {
         $th = $this;
         
-        $amqp -> sub(
+        $this -> amqp -> sub(
             'log',
             function($body) use($th) {
                 return $th -> newLog($body);
+            }
+        ) -> then(
+            function() use($th) {
+                $th -> log -> info('Started log sink');
+            }
+        ) -> catch(
+            function($e) use($th) {
+                $th -> log -> error('Failed to start log sink: '.((string) $e));
+            }
+        );
+    }
+    
+    public function stop() {
+        $th = $this;
+        
+        return $this -> amqp -> unsub('log') -> then(
+            function() use ($th) {
+                $th -> log -> info('Stopped log sink');
+            }
+        ) -> catch(
+            function($e) use($th) {
+                $th -> log -> error('Failed to stop log sink: '.((string) $e));
             }
         );
     }
