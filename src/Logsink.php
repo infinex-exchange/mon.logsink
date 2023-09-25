@@ -16,6 +16,8 @@ class Logsink {
     public function start() {
         $th = $this;
         
+        $this -> log -> error('Test');
+        
         $this -> amqp -> sub(
             'log',
             function($body) use($th) {
