@@ -5,7 +5,6 @@ require __DIR__.'/Logsink.php';
 class App extends Infinex\App\App {
     private $pdo;
     private $logsink;
-    private $cs;
     
     function __construct() {
         parent::__construct('mon.logsink');
@@ -20,28 +19,30 @@ class App extends Infinex\App\App {
         );
         
         $this -> logsink = new Logsink($this -> log, $this -> amqp, $this -> pdo);
-        
-        $this -> cs = new Infinex\App\ConditionalStart(
-            $this -> loop,
-            $this -> log,
-            [
-                $this -> amqp,
-                $this -> pdo
-            ],
-            $this -> logsink
-        );
     }
     
     public function start() {
-        parent::start();
-        $this -> pdo -> start();
-        $this -> cs -> start();
+        $th = $this;
+        
+        parent::start() -> then(
+            function() use($th) {
+                return $th -> pdo -> start();
+            }
+        ) -> then(
+            function() use($th) {
+                return $th -> logsink -> start();
+            }
+        ) -> catch(
+            function($e) {
+                $th -> log -> error('Failed start app: '.((string) $e));
+            }
+        );
     }
     
     public function stop() {
         $th = $this;
         
-        $this -> cs -> stop() -> then(
+        $this -> logsink -> stop() -> then(
             function() use($th) {
                 return $th -> pdo -> stop();
             }

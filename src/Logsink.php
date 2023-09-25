@@ -16,7 +16,7 @@ class Logsink {
     public function start() {
         $th = $this;
         
-        $this -> amqp -> sub(
+        return $this -> amqp -> sub(
             'log',
             function($body) use($th) {
                 return $th -> newLog($body);
@@ -28,6 +28,7 @@ class Logsink {
         ) -> catch(
             function($e) use($th) {
                 $th -> log -> error('Failed to start log sink: '.((string) $e));
+                throw $e;
             }
         );
     }
