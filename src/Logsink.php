@@ -1,5 +1,7 @@
 <?php
 
+use function Infinex\Validation\validateFloat;
+
 class Logsink {
     private $log;
     private $amqp;
@@ -48,6 +50,41 @@ class Logsink {
     }
     
     public function newLog($body) {
+        if(!isset($body['hostname'])) {
+            return;
+        }
+        if(!isset($body['service'])) {
+            return;
+        }
+        if(!isset($body['instance'])) {
+            return;
+        }
+        if(!isset($body['time'])) {
+            return;
+        }
+        if(!isset($body['level'])) {
+            return;
+        }
+        if(!isset($body['msg'])) {
+            return;
+        }
+        
+        if(!is_string($body['hostname'])) {
+            return;
+        }
+        if(!is_int($body['instance'])) {
+            return;
+        }
+        if(!validateFloat($body['time'])) {
+            return;
+        }
+        if(!is_int($body['level']) || $body['level'] < 0 || $body['level'] > 3) {
+            return;
+        }
+        if(!is_string($body['msg'])) {
+            return;
+        }
+        
         $task = [
             ':hostname' => $body['hostname'],
             ':service' => $body['service'],
