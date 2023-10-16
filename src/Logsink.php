@@ -1,7 +1,5 @@
 <?php
 
-use function Infinex\Validation\validateFloat;
-
 class Logsink {
     private $log;
     private $amqp;
@@ -83,7 +81,7 @@ class Logsink {
             $this -> log -> error('Ignoring log with invalid instance');
             return;
         }
-        if(!validateFloat($body['time'])) {
+        if(!is_float($body['time']) || $body['time'] < 0) {
             $this -> log -> error('Ignoring log with invalid time');
             return;
         }
