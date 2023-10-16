@@ -51,37 +51,48 @@ class Logsink {
     
     public function newLog($body) {
         if(!isset($body['hostname'])) {
+            $this -> log -> error('Ignoring log without hostname');
             return;
         }
         if(!isset($body['service'])) {
+            $this -> log -> error('Ignoring log without service');
             return;
         }
         if(!isset($body['instance'])) {
+            $this -> log -> error('Ignoring log without instance');
             return;
         }
         if(!isset($body['time'])) {
+            $this -> log -> error('Ignoring log without time');
             return;
         }
         if(!isset($body['level'])) {
+            $this -> log -> error('Ignoring log without level');
             return;
         }
         if(!isset($body['msg'])) {
+            $this -> log -> error('Ignoring log without msg');
             return;
         }
         
         if(!is_string($body['hostname'])) {
+            $this -> log -> error('Ignoring log with invalid hostname');
             return;
         }
         if(!is_int($body['instance'])) {
+            $this -> log -> error('Ignoring log with invalid instance');
             return;
         }
         if(!validateFloat($body['time'])) {
+            $this -> log -> error('Ignoring log with invalid time');
             return;
         }
         if(!is_int($body['level']) || $body['level'] < 0 || $body['level'] > 3) {
+            $this -> log -> error('Ignoring log with invalid level');
             return;
         }
         if(!is_string($body['msg'])) {
+            $this -> log -> error('Ignoring log with invalid msg');
             return;
         }
         
